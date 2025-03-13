@@ -48,6 +48,13 @@
         <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
+	<!-- JWT authentication -->
+	<dependency>
+		<groupId>io.jsonwebtoken</groupId>
+		<artifactId>jjwt</artifactId>
+		<version>0.9.1</version>
+	</dependency>
+
     <!-- Lombok (reduces boilerplate code) -->
     <dependency>
         <groupId>org.projectlombok</groupId>
@@ -82,6 +89,9 @@
         <artifactId>spring-boot-starter-test</artifactId>
         <scope>test</scope>
     </dependency>
+
+	
+
 </dependencies>
 
 
