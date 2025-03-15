@@ -41,21 +41,29 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody UserLoginDTO userDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
-        );
+        try {
+            // Make sure you're using the username field correctly here - it seems you're using email instead
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        // Generate JWT token
-        String jwtToken = jwtUtil.generateToken(userDTO.getEmail());
-        
-        // Return response with token
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "User signed-in successfully!");
-        response.put("token", "Bearer " + jwtToken);
-        response.put("status", HttpStatus.OK);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            
+            // Generate JWT token - make sure you're using the correct field (username not email)
+            String jwtToken = jwtUtil.generateToken(userDTO.getEmail());
+            
+            // Return response with token
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User signed-in successfully!");
+            response.put("token", "Bearer " + jwtToken);
+            response.put("status", HttpStatus.OK);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Authentication failed: " + e.getMessage());
+            errorResponse.put("status", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
     }
 }
