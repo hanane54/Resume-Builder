@@ -57,9 +57,17 @@ public class ResumeMapper {
     }
 
     public void updateEntityFromDTO( ResumeRegisterDTO resumeDTO, Resume resume ){
-        if (resume == null) {
+        if (resume == null || resumeDTO == null )  {
             // return null;
             // do nothing 
+            resume.setTitle(resumeDTO.getTitle());
+            resume.setSummary(resumeDTO.getSummary());
+            resume.setFullName(resumeDTO.getFullName());
+            resume.setEmail(resumeDTO.getEmail());
+            resume.setPhone(resumeDTO.getPhone());
+            resume.setAddress(resumeDTO.getAddress());
+            resume.setLinkedin(resumeDTO.getLinkedin());
+            resume.setWebsite(resumeDTO.getWebsite());
         }
 
     }

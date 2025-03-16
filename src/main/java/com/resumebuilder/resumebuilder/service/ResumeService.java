@@ -3,7 +3,6 @@ package com.resumebuilder.resumebuilder.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class ResumeService {
     private final UserRepository userRepository; 
     private final ResumeMapper resumeMapper;
 
-    @Autowired
     public ResumeService(ResumeRepository resumeRepository, UserRepository userRepository, ResumeMapper resumeMapper) {
         this.resumeRepository = resumeRepository;
         this.userRepository = userRepository; 
@@ -75,8 +73,7 @@ public class ResumeService {
         
         Resume resume = resumeRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("No resume found with id: ", id) );
 
-            
-        // Security check
+        // Check if the current user is the resume owner
         if (!resume.getUser().getId().equals(user.getId())) {
             throw new UnauthorizedException("You do not have permission to update this resume");
         }
