@@ -1,6 +1,9 @@
 package com.resumebuilder.resumebuilder.model;
 
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
@@ -15,8 +18,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "education")
+@Table(name = "educations")
 public class Education {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String institution;
     private String degree;
     private String fieldOfStudy;

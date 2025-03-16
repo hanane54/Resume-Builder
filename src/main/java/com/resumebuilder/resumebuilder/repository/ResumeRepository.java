@@ -17,12 +17,11 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     Optional<Resume> findByIdAndUserId(Long id, Long userId);
     
     // Search resumes by title or content
-    @Query("SELECT r FROM Resume r WHERE r.userId = :userId AND " +
-           "(LOWER(r.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-           "LOWER(r.summary) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    List<Resume> searchByUserIdAndTitleOrSummary(@Param("userId") Long userId, 
-                                                @Param("searchTerm") String searchTerm);
-    
+    @Query("SELECT r FROM Resume r WHERE r.user.id = :userId AND " +
+       "(LOWER(r.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+       "LOWER(r.summary) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+List<Resume> searchByUserIdAndTitleOrSummary(@Param("userId") Long userId, 
+                                            @Param("searchTerm") String searchTerm);
     // Count resumes by user
     Long countByUserId(Long userId);
     
