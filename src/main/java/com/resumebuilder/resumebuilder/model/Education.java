@@ -17,6 +17,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "education")
 public class Education {
+    private String institution;
+    private String degree;
+    private String fieldOfStudy;
+    private String startDate;
+    private String endDate;
+    private String description;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id")
     private Resume resume;

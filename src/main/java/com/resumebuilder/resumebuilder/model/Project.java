@@ -1,6 +1,8 @@
 package com.resumebuilder.resumebuilder.model;
 
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -18,6 +20,13 @@ import lombok.Setter;
 @Entity
 @Table(name = "projects")
 public class Project {
+    
+    private String title;
+    private String description;
+    private String startDate;
+    private String endDate;
+    private String url;
+    private List<String> technologies;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id")
     private Resume resume;

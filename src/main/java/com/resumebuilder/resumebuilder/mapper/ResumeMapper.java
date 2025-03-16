@@ -3,10 +3,17 @@ package com.resumebuilder.resumebuilder.mapper;
 import com.resumebuilder.resumebuilder.dto.ResumeRegisterDTO;
 import com.resumebuilder.resumebuilder.dto.ResumeResponseDTO;
 import com.resumebuilder.resumebuilder.model.Resume;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ResumeMapper {
+
+    private final AuthenticationManager authenticationManager;
+
+    ResumeMapper(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     // Method to map ResumeRegisterDTO to Resume entity
     public Resume toEntity(ResumeRegisterDTO resumeDTO) {
@@ -23,7 +30,6 @@ public class ResumeMapper {
         resume.setAddress(resumeDTO.getAddress());
         resume.setLinkedin(resumeDTO.getLinkedin());
         resume.setWebsite(resumeDTO.getWebsite());
-        // Add other fields as necessary
 
         return resume;
     }
@@ -46,8 +52,15 @@ public class ResumeMapper {
         resumeResponseDTO.setWebsite(resume.getWebsite());
         resumeResponseDTO.setCreatedAt(resume.getCreatedAt());
         resumeResponseDTO.setUpdatedAt(resume.getUpdatedAt());
-        // Add other fields as necessary
 
         return resumeResponseDTO;
+    }
+
+    public void updateEntityFromDTO( ResumeRegisterDTO resumeDTO, Resume resume ){
+        if (resume == null) {
+            // return null;
+            // do nothing 
+        }
+
     }
 }

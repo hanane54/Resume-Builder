@@ -30,7 +30,9 @@ public class Experience {
     private String position;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String location;
     private String description;
+    
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id")

@@ -1,5 +1,8 @@
 package com.resumebuilder.resumebuilder.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,4 +58,52 @@ public class ResumeService {
         
         return resumeMapper.toResponseDTO(resume);
     }
+
+    @Transactional(readOnly = true)
+    public List<ResumeResponseDTO> getAllUserResumes(String username) {
+        
+        User user = userRepository.findByUsername(username).orElseThrow( () -> new ResourceNotFoundException("User not found") );
+        
+        List<Resume> resumes = resumeRepository.findByUserId(user.getId());
+
+        return resumes.stream().map( resumeMapper::toResponseDTO ).collect( Collectors.toList() );
+    }
+
+    @Transactional
+    public ResumeResponseDTO updateResume(Long id, ResumeRegisterDTO resumeDTO, String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        Resume resume = resumeRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("No resume found with id: ", id) );
+
+            
+        // Security check
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException("You do not have permission to update this resume");
+        }
+        
+        // Update resume properties
+        resumeMapper.updateEntityFromDTO(resumeDTO, resume);
+        
+        Resume updatedResume = resumeRepository.save(resume);
+        return resumeMapper.toResponseDTO(updatedResume);
+    }
+
+    @Transactional
+    public void deleteResume(Long id, String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            
+        Resume resume = resumeRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Resume not found with id: " + id));
+            
+        // Security check
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException("You do not have permission to delete this resume");
+        }
+        
+        resumeRepository.delete(resume);
+    }
+
+
+
 }
