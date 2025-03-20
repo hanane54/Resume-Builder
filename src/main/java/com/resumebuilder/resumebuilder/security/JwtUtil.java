@@ -11,8 +11,10 @@ public class JwtUtil {
 
     private String secretKey = "yourSecretKey";  // Replace with a stronger secret key
 
+    
     // Generate JWT token
     public String generateToken(String username) {
+        System.out.println("Generating token for username: " + username);  
         return Jwts.builder()
             .setSubject(username)
             .setIssuedAt(new Date())

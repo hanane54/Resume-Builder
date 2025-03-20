@@ -27,7 +27,11 @@ public class ResumeController {
     public ResponseEntity<ResumeResponseDTO> createResume(
             @RequestBody ResumeRegisterDTO resumeDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
-        
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null. Ensure the user is authenticated.");
+        }
+
         ResumeResponseDTO createdResume = resumeService.createResume(resumeDTO, userDetails.getUsername());
         return new ResponseEntity<>(createdResume, HttpStatus.CREATED);
     }
@@ -36,6 +40,10 @@ public class ResumeController {
     public ResponseEntity<ResumeResponseDTO> getResumeById(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null. Ensure the user is authenticated.");
+        }
         
         ResumeResponseDTO resume = resumeService.getResumeById(id, userDetails.getUsername());
         return ResponseEntity.ok(resume);
@@ -44,6 +52,10 @@ public class ResumeController {
     @GetMapping
     public ResponseEntity<List<ResumeResponseDTO>> getAllUserResumes(
             @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null. Ensure the user is authenticated.");
+        }
         
         List<ResumeResponseDTO> resumes = resumeService.getAllUserResumes(userDetails.getUsername());
         return ResponseEntity.ok(resumes);
@@ -54,6 +66,10 @@ public class ResumeController {
             @PathVariable Long id,
             @RequestBody ResumeRegisterDTO resumeDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null. Ensure the user is authenticated.");
+        }
         
         ResumeResponseDTO updatedResume = resumeService.updateResume(id, resumeDTO, userDetails.getUsername());
         return ResponseEntity.ok(updatedResume);
@@ -63,6 +79,10 @@ public class ResumeController {
     public ResponseEntity<Void> deleteResume(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("UserDetails is null. Ensure the user is authenticated.");
+        }
         
         resumeService.deleteResume(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();

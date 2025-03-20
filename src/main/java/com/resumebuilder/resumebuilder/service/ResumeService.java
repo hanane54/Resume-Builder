@@ -30,8 +30,8 @@ public class ResumeService {
     }
 
     @Transactional
-    public ResumeResponseDTO createResume(ResumeRegisterDTO resumeDTO, String email) {
-        User user = userRepository.findByEmail(email)
+    public ResumeResponseDTO createResume(ResumeRegisterDTO resumeDTO, String username) {
+        User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         Resume resume = resumeMapper.toEntity(resumeDTO);

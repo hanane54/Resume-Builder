@@ -16,21 +16,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
     private final UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, 
+                          AuthenticationManager authenticationManager, 
+                          UserDetailsService userDetailsService, 
+                          JwtUtil jwtUtil) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -44,19 +51,19 @@ public class UserController {
         try {
             // Make sure you're using the username field correctly here - it seems you're using email instead
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
+                new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword())
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // SecurityContextHolder.getContext().setAuthentication(authentication);
             
-            // Generate JWT token - make sure you're using the correct field (username not email)
-            String jwtToken = jwtUtil.generateToken(userDTO.getEmail());
-            
-            // Return response with token
+            // // Generate JWT token - make sure you're using the correct field (username not email)
+            // String jwtToken = jwtUtil.generateToken(userDTO.getUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getUsername());
+            String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
+
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User signed-in successfully!");
             response.put("token", "Bearer " + jwtToken);
-            response.put("status", HttpStatus.OK);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
