@@ -1,6 +1,7 @@
 package com.resumebuilder.resumebuilder.controller;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -9,18 +10,28 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import com.itextpdf.text.DocumentException;
 import com.resumebuilder.resumebuilder.dto.ResumeRegisterDTO;
 import com.resumebuilder.resumebuilder.dto.ResumeResponseDTO;
+import com.resumebuilder.resumebuilder.model.Resume;
+import com.resumebuilder.resumebuilder.service.ResumePdfService;
 import com.resumebuilder.resumebuilder.service.ResumeService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 
 @RestController
 @RequestMapping("/resumes")
 public class ResumeController {
     private final ResumeService resumeService;
+    private final ResumePdfService resumePDFService;
 
-    public ResumeController(ResumeService resumeService ){
+    public ResumeController(ResumeService resumeService, ResumePdfService resumePdfService ){
         this.resumeService = resumeService;
+        this.resumePDFService = resumePdfService;
     }
      
     @PostMapping
@@ -86,6 +97,24 @@ public class ResumeController {
         
         resumeService.deleteResume(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<byte[]> downloadResume(@PathVariable Long id, HttpServletRequest request) throws IOException, DocumentException {
+        String username = request.getUserPrincipal().getName();
+    
+        // Retrieve the Resume entity instead of the DTO
+        Resume resume = resumeService.getResumeEntityById(id, username); 
+        
+        byte[] pdfBytes = resumePDFService.generateResumePDF(resume);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=resume.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
      
 

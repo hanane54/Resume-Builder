@@ -12,8 +12,6 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +22,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final AuthenticationManager authenticationManager;
+    // private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
@@ -33,7 +31,6 @@ public class UserController {
                           UserDetailsService userDetailsService, 
                           JwtUtil jwtUtil) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }
@@ -46,14 +43,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody UserLoginDTO userDTO) {
-        try {
-            // Make sure you're using the username field correctly here - it seems you're using email instead
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword())
-            );
-
-            // SecurityContextHolder.getContext().setAuthentication(authentication);
-            
+        try {            
             // // Generate JWT token - make sure you're using the correct field (username not email)
             // String jwtToken = jwtUtil.generateToken(userDTO.getUsername());
             UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getUsername());

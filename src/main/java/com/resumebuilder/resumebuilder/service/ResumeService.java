@@ -100,6 +100,21 @@ public class ResumeService {
         
         resumeRepository.delete(resume);
     }
+    
+    @Transactional(readOnly = true)
+    public Resume getResumeEntityById(Long id, String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            
+        Resume resume = resumeRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Resume not found with id: " + id));
+            
+        if (!resume.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedException("You do not have permission to access this resume");
+        }
+        
+        return resume;
+    }
 
 
 
