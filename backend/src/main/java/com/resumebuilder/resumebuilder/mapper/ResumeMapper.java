@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResumeMapper {
 
-    private final AuthenticationManager authenticationManager;
-
-    ResumeMapper(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+    ResumeMapper(AuthenticationManager authenticationManager) {}
 
     // Method to map ResumeRegisterDTO to Resume entity
     public Resume toEntity(ResumeRegisterDTO resumeDTO) {
