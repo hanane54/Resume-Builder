@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Navbar from './components/Navbar';
+import ResumeBuilder from './pages/ResumeBuilder';
+import ResumePreview from './pages/ResumePreview';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/resume-builder" element={<ResumeBuilder />} />
+        <Route path="/resume-preview" element={<ResumePreview />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
