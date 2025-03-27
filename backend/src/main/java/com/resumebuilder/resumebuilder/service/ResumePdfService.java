@@ -22,8 +22,8 @@ public class ResumePdfService {
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
         Font contentFont = FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK);
 
-        // Add Full Name
-        Paragraph title = new Paragraph(resume.getFullName(), titleFont);
+        // Add Full Name 
+        Paragraph title = new Paragraph(resume.getTitle(), titleFont);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
