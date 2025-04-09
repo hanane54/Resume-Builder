@@ -48,6 +48,11 @@ public class UserService {
         return userRepository.findById(id)
             .orElse(null);
     }
+
+    public User getUserProfile(String username) {
+        User user = findByUsername(username);
+        return user != null && passwordEncoder.matches(password, user.getPassword());
+    }
     
     // Method to check if credentials are valid (without using Spring Security)
     public boolean isValidCredentials(String username, String password) {
