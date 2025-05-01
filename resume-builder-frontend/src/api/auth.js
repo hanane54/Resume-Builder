@@ -1,12 +1,18 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import axiosInstance from './axiosConfig';
 
 export const login = async (credentials) => {
-  const response = await axios.post(`${API_BASE_URL}/login`, credentials);
+  const response = await axiosInstance.post('/login', credentials);
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
   return response.data;
 };
 
 export const register = async (userData) => {
-  const response = await axios.post(`${API_BASE_URL}/register`, userData);
+  const response = await axiosInstance.post('/register', userData);
   return response.data;
+};
+
+export const logout = () => {
+  localStorage.removeItem('token');
 };

@@ -1,12 +1,11 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../config';
+import axiosInstance from './axiosConfig';
 
 export const getUserProfile = async () => {
-  const response = await axios.get(`${API_BASE_URL}/users/profile`);
+  const response = await axiosInstance.get('/users/profile');
   return response.data;
 };
 
 export const updateUserProfile = async (userData) => {
-  const response = await axios.put(`${API_BASE_URL}/users/profile`, userData);
+  const response = await axiosInstance.put('/users/profile', userData);
   return response.data;
 };
