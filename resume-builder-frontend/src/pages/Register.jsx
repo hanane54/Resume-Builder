@@ -126,33 +126,28 @@ export const validateEmail = (email) => {
 };
 
 function Register() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState({
     value: "",
     isTouched: false,
   });
-  const [role, setRole] = useState("role");
 
   const getIsFormValid = () => {
     return (
-      firstName &&
+      username &&
       validateEmail(email) &&
-      password.value.length >= 8 &&
-      role !== "role"
+      password.value.length >= 8 
     );
   };
 
   const clearForm = () => {
-    setFirstName("");
-    setLastName("");
+    setUsername("");
     setEmail("");
     setPassword({
       value: "",
       isTouched: false,
     });
-    setRole("role");
   };
 
   const handleSubmit = (e) => {
@@ -169,27 +164,17 @@ function Register() {
           
           <FieldContainer>
             <Label>
-              First name <RequiredMark>*</RequiredMark>
+              Username <RequiredMark>*</RequiredMark>
             </Label>
             <Input
-              value={firstName}
+              value={username}
               onChange={(e) => {
-                setFirstName(e.target.value);
+                setUsername(e.target.value);
               }}
               placeholder="First name"
             />
           </FieldContainer>
           
-          <FieldContainer>
-            <Label>Last name</Label>
-            <Input
-              value={lastName}
-              onChange={(e) => {
-                setLastName(e.target.value);
-              }}
-              placeholder="Last name"
-            />
-          </FieldContainer>
           
           <FieldContainer>
             <Label>
@@ -229,8 +214,7 @@ function Register() {
             <Label>
               Role <RequiredMark>*</RequiredMark>
             </Label>
-            <Select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="role">Select your role</option>
+            <Select>
               <option value="individual">Individual</option>
               <option value="business">Business</option>
             </Select>
