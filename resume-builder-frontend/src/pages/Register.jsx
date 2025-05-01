@@ -1,6 +1,122 @@
-import './../App.css'; 
-import {useState} from "react"; 
- 
+import React, { useState } from 'react';
+import styled from 'styled-components';
+
+// Styled components for the registration page
+const RegisterContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f8ff;
+  padding: 2rem 0;
+`;
+
+const FormContainer = styled.form`
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+`;
+
+const Title = styled.h2`
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`;
+
+const FieldSet = styled.fieldset`
+  border: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const FieldContainer = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #34495e;
+  font-weight: 500;
+`;
+
+const RequiredMark = styled.sup`
+  color: #e74c3c;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    outline: none;
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #bdc3c7;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  appearance: menulist;
+  transition: border-color 0.3s, box-shadow 0.3s;
+
+  &:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    outline: none;
+  }
+`;
+
+const ErrorMessage = styled.p`
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover:not(:disabled) {
+    background-color: #34495e;
+  }
+
+  &:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+  }
+`;
+
+// Password error message component
+const PasswordErrorMessage = () => {
+  return <ErrorMessage>Password should have at least 8 characters</ErrorMessage>;
+};
+
+// Email validation function
 export const validateEmail = (email) => {
   return String(email)
     .toLowerCase()
@@ -9,123 +125,124 @@ export const validateEmail = (email) => {
     );
 };
 
-const PasswordErrorMessage = () => { 
- return ( 
-   <p className="FieldError">Password should have at least 8 characters</p> 
- ); 
-}; 
- 
-function Register() { 
- const [firstName, setFirstName] = useState(""); 
- const [lastName, setLastName] = useState(""); 
- const [email, setEmail] = useState(""); 
- const [password, setPassword] = useState({ 
-   value: "", 
-   isTouched: false, 
- }); 
- const [role, setRole] = useState("role"); 
+function Register() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState({
+    value: "",
+    isTouched: false,
+  });
+  const [role, setRole] = useState("role");
 
- const getIsFormValid = () => { 
-   return ( 
-     firstName && 
-     validateEmail(email) && 
-     password.value.length >= 8 && 
-     role !== "role" 
-   ); 
- }; 
- 
- const clearForm = () => {
-   setFirstName(""); 
-   setLastName(""); 
-   setEmail(""); 
-   setPassword({ 
-     value: "", 
-     isTouched: false, 
-   }); 
-   setRole("role"); 
- }; 
- 
- const handleSubmit = (e) => { 
-   e.preventDefault(); 
-   alert("Account created!"); 
-   clearForm(); 
- }; 
- 
- return ( 
-   <div className="App"> 
-     <form onSubmit={handleSubmit}> 
-       <fieldset> 
-         <h2>Sign Up</h2> 
-         <div className="Field"> 
-           <label> 
-             First name <sup>*</sup> 
-           </label> 
-           <input 
-             value={firstName} 
-             onChange={(e) => { 
-               setFirstName(e.target.value); 
-             }} 
-             placeholder="First name" 
-           /> 
-         </div> 
-         <div className="Field"> 
-           <label>Last name</label> 
-           <input 
-             value={lastName} 
-             onChange={(e) => { 
-               setLastName(e.target.value); 
-             }} 
-             placeholder="Last name" 
-           /> 
-         </div> 
-         <div className="Field"> 
-           <label> 
-             Email address <sup>*</sup> 
-           </label> 
-           <input 
-             value={email} 
-             onChange={(e) => { 
-               setEmail(e.target.value); 
-             }} 
-             placeholder="Email address" 
-           /> 
-         </div> 
-         <div className="Field"> 
-           <label> 
-             Password <sup>*</sup> 
-           </label> 
-           <input 
-             value={password.value} 
-             type="password" 
-             onChange={(e) => { 
-               setPassword({ ...password, value: e.target.value }); 
-             }} 
-             onBlur={() => { 
-               setPassword({ ...password, isTouched: true }); 
-             }} 
-             placeholder="Password" 
-           /> 
-           {password.isTouched && password.value.length < 8 ? ( 
-             <PasswordErrorMessage /> 
-           ) : null} 
-         </div> 
-         <div className="Field"> 
-           <label> 
-             Role <sup>*</sup> 
-           </label> 
-           <select value={role} onChange={(e) => setRole(e.target.value)}> 
-             <option value="role">Role</option> 
-             <option value="individual">Individual</option> 
-             <option value="business">Business</option> 
-           </select> 
-         </div> 
-         <button type="submit" disabled={!getIsFormValid()}> 
-           Create account 
-         </button> 
-       </fieldset> 
-     </form> 
-   </div> 
- ); 
-} 
+  const getIsFormValid = () => {
+    return (
+      firstName &&
+      validateEmail(email) &&
+      password.value.length >= 8 &&
+      role !== "role"
+    );
+  };
+
+  const clearForm = () => {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPassword({
+      value: "",
+      isTouched: false,
+    });
+    setRole("role");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Account created!");
+    clearForm();
+  };
+
+  return (
+    <RegisterContainer>
+      <FormContainer onSubmit={handleSubmit}>
+        <FieldSet>
+          <Title>Sign Up</Title>
+          
+          <FieldContainer>
+            <Label>
+              First name <RequiredMark>*</RequiredMark>
+            </Label>
+            <Input
+              value={firstName}
+              onChange={(e) => {
+                setFirstName(e.target.value);
+              }}
+              placeholder="First name"
+            />
+          </FieldContainer>
+          
+          <FieldContainer>
+            <Label>Last name</Label>
+            <Input
+              value={lastName}
+              onChange={(e) => {
+                setLastName(e.target.value);
+              }}
+              placeholder="Last name"
+            />
+          </FieldContainer>
+          
+          <FieldContainer>
+            <Label>
+              Email address <RequiredMark>*</RequiredMark>
+            </Label>
+            <Input
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              placeholder="Email address"
+              type="email"
+            />
+          </FieldContainer>
+          
+          <FieldContainer>
+            <Label>
+              Password <RequiredMark>*</RequiredMark>
+            </Label>
+            <Input
+              value={password.value}
+              type="password"
+              onChange={(e) => {
+                setPassword({ ...password, value: e.target.value });
+              }}
+              onBlur={() => {
+                setPassword({ ...password, isTouched: true });
+              }}
+              placeholder="Password"
+            />
+            {password.isTouched && password.value.length < 8 ? (
+              <PasswordErrorMessage />
+            ) : null}
+          </FieldContainer>
+          
+          <FieldContainer>
+            <Label>
+              Role <RequiredMark>*</RequiredMark>
+            </Label>
+            <Select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="role">Select your role</option>
+              <option value="individual">Individual</option>
+              <option value="business">Business</option>
+            </Select>
+          </FieldContainer>
+          
+          <SubmitButton type="submit" disabled={!getIsFormValid()}>
+            Create account
+          </SubmitButton>
+        </FieldSet>
+      </FormContainer>
+    </RegisterContainer>
+  );
+}
 
 export default Register;
