@@ -164,8 +164,8 @@ function Register() {
     try {
       const userData = {
         username,
-        email,
-        password: password.value
+        password: password.value,
+        email        
       };
 
       const response = await register(userData);
