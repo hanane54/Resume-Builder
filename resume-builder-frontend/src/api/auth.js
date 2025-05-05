@@ -1,7 +1,7 @@
 import axiosInstance from './axiosConfig';
 
 export const login = async (credentials) => {
-  const response = await axiosInstance.post('/login', credentials);
+  const response = await axiosInstance.post('/users/login', credentials);
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
   }
@@ -9,7 +9,7 @@ export const login = async (credentials) => {
 };
 
 export const register = async (userData) => {
-  const response = await axiosInstance.post('/register', userData);
+  const response = await axiosInstance.post('/users/register', userData);
   return response.data;
 };
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { register } from '../api/auth';
 
 // Styled components for the registration page
 const RegisterContainer = styled.div`
@@ -126,12 +128,15 @@ export const validateEmail = (email) => {
 };
 
 function Register() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState({
     value: "",
     isTouched: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const getIsFormValid = () => {
     return (
@@ -148,12 +153,31 @@ function Register() {
       value: "",
       isTouched: false,
     });
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Account created!");
-    clearForm();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const userData = {
+        username,
+        email,
+        password: password.value
+      };
+
+      const response = await register(userData);
+      console.log('Registration successful:', response);
+      clearForm();
+      navigate('/login'); // Redirect to login page after successful registration
+    } catch (err) {
+      console.error('Registration failed:', err);
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -161,6 +185,8 @@ function Register() {
       <FormContainer onSubmit={handleSubmit}>
         <FieldSet>
           <Title>Sign Up</Title>
+          
+          {error && <ErrorMessage>{error}</ErrorMessage>}
           
           <FieldContainer>
             <Label>
@@ -171,10 +197,10 @@ function Register() {
               onChange={(e) => {
                 setUsername(e.target.value);
               }}
-              placeholder="First name"
+              placeholder="Username"
+              required
             />
           </FieldContainer>
-          
           
           <FieldContainer>
             <Label>
@@ -187,6 +213,7 @@ function Register() {
               }}
               placeholder="Email address"
               type="email"
+              required
             />
           </FieldContainer>
           
@@ -204,6 +231,7 @@ function Register() {
                 setPassword({ ...password, isTouched: true });
               }}
               placeholder="Password"
+              required
             />
             {password.isTouched && password.value.length < 8 ? (
               <PasswordErrorMessage />
@@ -220,8 +248,8 @@ function Register() {
             </Select>
           </FieldContainer>
           
-          <SubmitButton type="submit" disabled={!getIsFormValid()}>
-            Create account
+          <SubmitButton type="submit" disabled={!getIsFormValid() || isLoading}>
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </SubmitButton>
         </FieldSet>
       </FormContainer>
