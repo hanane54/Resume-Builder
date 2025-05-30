@@ -135,6 +135,7 @@ function Register() {
     value: "",
     isTouched: false,
   });
+  const [role, setRole] = useState("individual");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -165,7 +166,8 @@ function Register() {
       const userData = {
         username,
         password: password.value,
-        email        
+        email,
+        role        
       };
 
       const response = await register(userData);
@@ -174,7 +176,17 @@ function Register() {
       navigate('/login'); // Redirect to login page after successful registration
     } catch (err) {
       console.error('Registration failed:', err);
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(err.response.data?.message || `Registration failed: ${err.response.status} ${err.response.statusText}`);
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check if the backend server is running.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError(`Registration failed: ${err.message}`);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -242,7 +254,10 @@ function Register() {
             <Label>
               Role <RequiredMark>*</RequiredMark>
             </Label>
-            <Select>
+            <Select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
               <option value="individual">Individual</option>
               <option value="business">Business</option>
             </Select>
