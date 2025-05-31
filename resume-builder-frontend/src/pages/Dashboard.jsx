@@ -1,45 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FileText } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2 } from 'lucide-react';
+import { getAllResumes, deleteResume } from '../api/resume';
 
 // If authenticated, it should show the opttion to start creating your resume, otherwise should not be accessible 
 // With a button to take me to the ResumeBuilder Page
 
 const DashboardContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #f0f8ff;
+  max-width: 1200px;
+  margin: 6rem auto 2rem;
   padding: 2rem;
-  margin-top: 4rem;
 `;
 
-const WelcomeSection = styled.div`
-  text-align: center;
-  margin-bottom: 3rem;
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 `;
 
 const Title = styled.h1`
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #2c3e50;
-  margin-bottom: 1rem;
-`;
-
-const Subtitle = styled.p`
-  font-size: 1.2rem;
-  color: #34495e;
-  margin-bottom: 2rem;
 `;
 
 const CreateResumeButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: white;
   background-color: #2c3e50;
@@ -54,38 +45,171 @@ const CreateResumeButton = styled.button`
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(44, 62, 80, 0.15);
   }
+`;
 
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(44, 62, 80, 0.1);
+const ResumesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+`;
+
+const ResumeCard = styled.div`
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(44, 62, 80, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
   }
+`;
+
+const ResumeTitle = styled.h3`
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+`;
+
+const ResumeDate = styled.p`
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+`;
+
+const ActionButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background-color: ${props => props.delete ? '#e74c3c' : '#3498db'};
+  color: white;
+
+  &:hover {
+    background-color: ${props => props.delete ? '#c0392b' : '#2980b9'};
+  }
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(44, 62, 80, 0.1);
+`;
+
+const EmptyStateText = styled.p`
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
 `;
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [resumes, setResumes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
+      return;
     }
+
+    fetchResumes();
   }, [navigate]);
+
+  const fetchResumes = async () => {
+    try {
+      const data = await getAllResumes();
+      setResumes(data);
+    } catch (err) {
+      setError('Failed to fetch resumes');
+      console.error('Error fetching resumes:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCreateResume = () => {
     navigate('/resume-builder');
   };
 
+  const handleEditResume = (resumeId) => {
+    navigate(`/resume-builder/${resumeId}`);
+  };
+
+  const handleDeleteResume = async (resumeId) => {
+    if (window.confirm('Are you sure you want to delete this resume?')) {
+      try {
+        await deleteResume(resumeId);
+        setResumes(resumes.filter(resume => resume.id !== resumeId));
+      } catch (err) {
+        setError('Failed to delete resume');
+        console.error('Error deleting resume:', err);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return <DashboardContainer>Loading...</DashboardContainer>;
+  }
+
   return (
     <DashboardContainer>
-      <WelcomeSection>
-        <Title>Welcome to Your Dashboard</Title>
-        <Subtitle>Start building your professional resume today</Subtitle>
-      </WelcomeSection>
-      
-      <CreateResumeButton onClick={handleCreateResume}>
-        <FileText size={24} />
-        Create New Resume
-      </CreateResumeButton>
+      <Header>
+        <Title>My Resumes</Title>
+        <CreateResumeButton onClick={handleCreateResume}>
+          <Plus size={20} />
+          Create New Resume
+        </CreateResumeButton>
+      </Header>
+
+      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+
+      {resumes.length === 0 ? (
+        <EmptyState>
+          <EmptyStateText>You haven't created any resumes yet.</EmptyStateText>
+          <CreateResumeButton onClick={handleCreateResume}>
+            <Plus size={20} />
+            Create Your First Resume
+          </CreateResumeButton>
+        </EmptyState>
+      ) : (
+        <ResumesGrid>
+          {resumes.map((resume) => (
+            <ResumeCard key={resume.id}>
+              <ResumeTitle>{resume.title}</ResumeTitle>
+              <ResumeDate>
+                Last updated: {new Date(resume.updatedAt).toLocaleDateString()}
+              </ResumeDate>
+              <ButtonGroup>
+                <ActionButton onClick={() => handleEditResume(resume.id)}>
+                  <Edit size={16} />
+                  Edit
+                </ActionButton>
+                <ActionButton delete onClick={() => handleDeleteResume(resume.id)}>
+                  <Trash2 size={16} />
+                  Delete
+                </ActionButton>
+              </ButtonGroup>
+            </ResumeCard>
+          ))}
+        </ResumesGrid>
+      )}
     </DashboardContainer>
   );
 };

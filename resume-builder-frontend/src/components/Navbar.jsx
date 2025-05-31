@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Nav = styled.nav`
@@ -86,11 +86,40 @@ const MobileMenu = styled.div`
   }
 `;
 
+const Button = styled.button`
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: white;
+    color: #2c3e50;
+  }
+`;
+
 const Navbar = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    navigate('/login');
   };
 
   return (
@@ -99,10 +128,18 @@ const Navbar = () => {
         <Logo to="/">Resume Builder</Logo>
         
         <NavLinks>
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/login">Login</NavLink>
-          <NavLink to="/register">Register</NavLink>
-          <NavLink to="/dashboard">Dashboard</NavLink>
+          {isAuthenticated ? (
+            <>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/profile">Profile</NavLink>
+              <Button onClick={handleLogout}>Logout</Button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </>
+          )}
         </NavLinks>
 
         <MobileMenuButton onClick={toggleMobileMenu}>
@@ -111,10 +148,18 @@ const Navbar = () => {
       </NavContainer>
 
       <MobileMenu isOpen={isMobileMenuOpen}>
-        <NavLink to="/" onClick={toggleMobileMenu}>Home</NavLink>
-        <NavLink to="/login" onClick={toggleMobileMenu}>Login</NavLink>
-        <NavLink to="/register" onClick={toggleMobileMenu}>Register</NavLink>
-        <NavLink to="/dashboard" onClick={toggleMobileMenu}>Dashboard</NavLink>
+        {isAuthenticated ? (
+          <>
+            <NavLink to="/dashboard" onClick={toggleMobileMenu}>Dashboard</NavLink>
+            <NavLink to="/profile" onClick={toggleMobileMenu}>Profile</NavLink>
+            <Button onClick={handleLogout}>Logout</Button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" onClick={toggleMobileMenu}>Login</NavLink>
+            <NavLink to="/register" onClick={toggleMobileMenu}>Register</NavLink>
+          </>
+        )}
       </MobileMenu>
     </Nav>
   );
