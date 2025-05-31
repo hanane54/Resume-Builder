@@ -9,9 +9,14 @@ import com.resumebuilder.resumebuilder.model.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class ResumeMapper {
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     ResumeMapper(AuthenticationManager authenticationManager) {}
 
@@ -51,9 +56,14 @@ public class ResumeMapper {
                 Experience experience = new Experience();
                 experience.setCompanyName(expDTO.getCompany());
                 experience.setPosition(expDTO.getPosition());
-                experience.setStartDate(java.time.LocalDateTime.parse(expDTO.getStartDate()));
+                // Parse date strings to LocalDateTime
+                if (expDTO.getStartDate() != null) {
+                    LocalDate startDate = LocalDate.parse(expDTO.getStartDate(), DATE_FORMATTER);
+                    experience.setStartDate(startDate.atStartOfDay());
+                }
                 if (expDTO.getEndDate() != null) {
-                    experience.setEndDate(java.time.LocalDateTime.parse(expDTO.getEndDate()));
+                    LocalDate endDate = LocalDate.parse(expDTO.getEndDate(), DATE_FORMATTER);
+                    experience.setEndDate(endDate.atStartOfDay());
                 }
                 experience.setDescription(expDTO.getDescription());
                 resume.addWorkExperience(experience);
@@ -125,9 +135,11 @@ public class ResumeMapper {
                     ExperienceDTO expDTO = new ExperienceDTO();
                     expDTO.setCompany(exp.getCompanyName());
                     expDTO.setPosition(exp.getPosition());
-                    expDTO.setStartDate(exp.getStartDate().toString());
+                    if (exp.getStartDate() != null) {
+                        expDTO.setStartDate(exp.getStartDate().toLocalDate().format(DATE_FORMATTER));
+                    }
                     if (exp.getEndDate() != null) {
-                        expDTO.setEndDate(exp.getEndDate().toString());
+                        expDTO.setEndDate(exp.getEndDate().toLocalDate().format(DATE_FORMATTER));
                     }
                     expDTO.setDescription(exp.getDescription());
                     return expDTO;
@@ -198,9 +210,14 @@ public class ResumeMapper {
                 Experience experience = new Experience();
                 experience.setCompanyName(expDTO.getCompany());
                 experience.setPosition(expDTO.getPosition());
-                experience.setStartDate(java.time.LocalDateTime.parse(expDTO.getStartDate()));
+                // Parse date strings to LocalDateTime
+                if (expDTO.getStartDate() != null) {
+                    LocalDate startDate = LocalDate.parse(expDTO.getStartDate(), DATE_FORMATTER);
+                    experience.setStartDate(startDate.atStartOfDay());
+                }
                 if (expDTO.getEndDate() != null) {
-                    experience.setEndDate(java.time.LocalDateTime.parse(expDTO.getEndDate()));
+                    LocalDate endDate = LocalDate.parse(expDTO.getEndDate(), DATE_FORMATTER);
+                    experience.setEndDate(endDate.atStartOfDay());
                 }
                 experience.setDescription(expDTO.getDescription());
                 resume.addWorkExperience(experience);
