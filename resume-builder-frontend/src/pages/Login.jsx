@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { login } from '../api/auth';
 
@@ -108,21 +109,49 @@ const SignUpLink = styled.a`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  background-color: #fde8e8;
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+`;
+
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
     try {
       const response = await login(credentials);
-      console.log('Login is done successfully:', response);
-      // Add your redirect logic here after successful login
+      console.log('Login successful:', response);
+      // Store the token if it exists
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+      }
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err) {
       console.error('Login failed:', err);
-      // Could add error state handling here to display error message to user
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setError(err.response.data?.message || 'Invalid username or password');
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -133,14 +162,16 @@ const Login = () => {
       <FormContainer onSubmit={handleSubmit}>
         <Title>Welcome Back</Title>
         
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        
         <FieldContainer>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="username">Username</Label>
           <Input 
-            id="email"
-            type="email" 
-            placeholder="Email address" 
-            value={credentials.email}
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} 
+            id="username"
+            type="text" 
+            placeholder="Username" 
+            value={credentials.username}
+            onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} 
             required
           />
         </FieldContainer>
