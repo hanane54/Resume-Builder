@@ -46,7 +46,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())  // CSRF disabled since we're using JWT
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use stateless sessions
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/register", "/users/login").permitAll()  // Allow public access
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/users/register", "/users/login").permitAll()  // Allow public access
                 .anyRequest().authenticated())  // Secure other endpoints
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)  
             .formLogin(form -> form.disable())

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FileText, Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { getAllResumes, deleteResume } from '../api/resume';
 
 // If authenticated, it should show the opttion to start creating your resume, otherwise should not be accessible 
