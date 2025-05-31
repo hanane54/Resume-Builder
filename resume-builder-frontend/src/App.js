@@ -9,6 +9,7 @@ import NotFound from './pages/NotFound';
 import Navbar from './components/Navbar';
 import ResumeBuilder from './pages/ResumeBuilder';
 import ResumePreview from './pages/ResumePreview';
+import ResumeTemplates from './pages/ResumeTemplates';
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/resume-builder" element={<ResumeBuilder />} />
-        <Route path="/resume-preview" element={<ResumePreview />} />
+        <Route path="/resume-templates/:resumeId" element={<ResumeTemplates />} />
+        <Route path="/resume-preview/:resumeId/:templateId" element={<ResumePreview />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
