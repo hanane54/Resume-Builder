@@ -505,7 +505,7 @@ const ResumeBuilder = () => {
                   Remove Project
                 </Button>
               )}
-            </div>
+    </div>
           ))}
           <Button type="button" onClick={() => addItem('projects')}>
             Add Project

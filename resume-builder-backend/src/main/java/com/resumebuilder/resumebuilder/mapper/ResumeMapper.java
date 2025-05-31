@@ -2,6 +2,9 @@ package com.resumebuilder.resumebuilder.mapper;
 
 import com.resumebuilder.resumebuilder.dto.ResumeRegisterDTO;
 import com.resumebuilder.resumebuilder.dto.ResumeResponseDTO;
+import com.resumebuilder.resumebuilder.dto.EducationDTO;
+import com.resumebuilder.resumebuilder.dto.ExperienceDTO;
+import com.resumebuilder.resumebuilder.dto.ProjectDTO;
 import com.resumebuilder.resumebuilder.model.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;

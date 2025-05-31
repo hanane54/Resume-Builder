@@ -33,38 +33,7 @@ public class ResumeRegisterDTO {
     private List<ProjectDTO> projects;
 }
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-class EducationDTO {
-    private String institution;
-    private String degree;
-    private String fieldOfStudy;
-    private String startDate;
-    private String endDate;
-    private String description;
-}
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-class ExperienceDTO {
-    private String company;
-    private String position;
-    private String startDate;
-    private String endDate;
-    private String description;
-}
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-class ProjectDTO {
-    private String name;
-    private String description;
-    private String technologies;
-    private String link;
-}
+
+
