@@ -43,14 +43,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody UserLoginDTO userDTO) {
         try {            
-            // // Generate JWT token - make sure you're using the correct field (username not email)
-            // String jwtToken = jwtUtil.generateToken(userDTO.getUsername());
             UserDetails userDetails = userDetailsService.loadUserByUsername(userDTO.getUsername());
             String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User signed-in successfully!");
-            response.put("token", "Bearer " + jwtToken);
+            response.put("token", jwtToken);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
