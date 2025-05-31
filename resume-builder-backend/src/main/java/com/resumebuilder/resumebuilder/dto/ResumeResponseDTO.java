@@ -1,6 +1,7 @@
 package com.resumebuilder.resumebuilder.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,16 @@ public class ResumeResponseDTO {
     private String website;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // Education
+    private List<EducationDTO> education;
+    
+    // Experience
+    private List<ExperienceDTO> experience;
+    
+    // Skills
+    private List<String> skills;
+    
+    // Projects
+    private List<ProjectDTO> projects;
 }
