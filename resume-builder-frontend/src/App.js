@@ -22,6 +22,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/resume-builder" element={<ResumeBuilder />} />
+        <Route path="/resume-builder/:resumeId" element={<ResumeBuilder />} />
         <Route path="/resume-templates/:resumeId" element={<ResumeTemplates />} />
         <Route path="/resume-preview/:resumeId/:templateId" element={<ResumePreview />} />
         <Route path="*" element={<NotFound />} />

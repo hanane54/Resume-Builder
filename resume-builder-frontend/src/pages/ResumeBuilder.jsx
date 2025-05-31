@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../api/axiosConfig';
+import { getResumeById, updateResume } from '../api/resume';
 
 const Container = styled.div`
   max-width: 800px;
@@ -108,6 +109,7 @@ const ErrorMessage = styled.div`
 
 const ResumeBuilder = () => {
   const navigate = useNavigate();
+  const { resumeId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [resumeData, setResumeData] = useState({
@@ -140,6 +142,22 @@ const ResumeBuilder = () => {
       link: ''
     }]
   });
+
+  useEffect(() => {
+    const fetchResume = async () => {
+      if (resumeId) {
+        try {
+          const data = await getResumeById(resumeId);
+          setResumeData(data);
+        } catch (err) {
+          setError('Failed to fetch resume data');
+          console.error('Error fetching resume:', err);
+        }
+      }
+    };
+
+    fetchResume();
+  }, [resumeId]);
 
   const handleInputChange = (section, index, field, value) => {
     if (section === 'education' || section === 'experience' || section === 'projects') {
@@ -209,9 +227,13 @@ const ResumeBuilder = () => {
     setError('');
 
     try {
-      const response = await axiosInstance.post('/resumes', resumeData);
+      let response;
+      if (resumeId) {
+        response = await updateResume(resumeId, resumeData);
+      } else {
+        response = await axiosInstance.post('/resumes', resumeData);
+      }
       console.log('Resume saved successfully:', response.data);
-      // Navigate to template selection page with the resume ID
       navigate(`/resume-templates/${response.data.id}`);
     } catch (err) {
       console.error('Failed to save resume:', err);
@@ -223,7 +245,7 @@ const ResumeBuilder = () => {
 
   return (
     <Container>
-      <Title>Build Your Resume</Title>
+      <Title>{resumeId ? 'Edit Resume' : 'Build Your Resume'}</Title>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
       <Form onSubmit={handleSubmit}>
@@ -505,7 +527,7 @@ const ResumeBuilder = () => {
                   Remove Project
                 </Button>
               )}
-    </div>
+            </div>
           ))}
           <Button type="button" onClick={() => addItem('projects')}>
             Add Project
@@ -513,7 +535,7 @@ const ResumeBuilder = () => {
         </Section>
 
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Save Resume'}
+          {isLoading ? 'Saving...' : resumeId ? 'Update Resume' : 'Save Resume'}
         </Button>
       </Form>
     </Container>
