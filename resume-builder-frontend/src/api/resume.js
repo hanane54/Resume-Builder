@@ -17,8 +17,13 @@ export const getAllResumes = async () => {
 
 // update resume details
 export const updateResume = async (id, resumeData) => {
-  const response = await axiosInstance.put(`/resumes/${id}`, resumeData);
-  return response.data;
+  try {
+    const response = await axiosInstance.put(`/resumes/${id}`, resumeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating resume:', error);
+    throw error;
+  }
 };
 
 export const deleteResume = async (id) => {

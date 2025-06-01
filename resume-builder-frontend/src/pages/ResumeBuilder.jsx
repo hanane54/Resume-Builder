@@ -245,20 +245,23 @@ const ResumeBuilder = () => {
       console.log('Sending resume data:', formattedResumeData);
 
       if (resumeId) {
-        // Update existing resume
-        await updateResume(resumeId, formattedResumeData);
-        console.log('Resume updated successfully');
-        navigate('/dashboard');
+        // Handle update
+        const response = await updateResume(resumeId, formattedResumeData);
+        console.log('Resume updated successfully:', response);
+        if (response) {
+          navigate('/dashboard');
+          return; // Exit the function after successful navigation
+        }
       } else {
-        // Create new resume
+        // Handle create
         const response = await axiosInstance.post('/resumes', formattedResumeData);
-        console.log('Create response:', response);
+        console.log('Resume created successfully:', response.data);
         if (response.data && response.data.id) {
           navigate(`/resume-templates/${response.data.id}`);
-        } else {
-          throw new Error('Invalid response from server');
+          return; // Exit the function after successful navigation
         }
       }
+      throw new Error('Failed to get valid response from server');
     } catch (err) {
       console.error('Failed to save resume:', err);
       console.error('Error response:', err.response?.data);
