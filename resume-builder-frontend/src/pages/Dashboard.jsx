@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { getAllResumes, deleteResume } from '../api/resume';
 
 // If authenticated, it should show the opttion to start creating your resume, otherwise should not be accessible 
@@ -94,11 +94,19 @@ const ActionButton = styled.button`
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  background-color: ${props => props.delete ? '#e74c3c' : '#3498db'};
+  background-color: ${props => {
+    if (props.delete) return '#e74c3c';
+    if (props.preview) return '#2ecc71';
+    return '#3498db';
+  }};
   color: white;
 
   &:hover {
-    background-color: ${props => props.delete ? '#c0392b' : '#2980b9'};
+    background-color: ${props => {
+      if (props.delete) return '#c0392b';
+      if (props.preview) return '#27ae60';
+      return '#2980b9';
+    }};
   }
 `;
 
@@ -164,6 +172,11 @@ const Dashboard = () => {
     }
   };
 
+  const handlePreviewResume = (resumeId) => {
+    // Navigate to the preview page with the modern template by default
+    navigate(`/resume-preview/${resumeId}/modern`);
+  };
+
   if (isLoading) {
     return <DashboardContainer>Loading...</DashboardContainer>;
   }
@@ -197,6 +210,10 @@ const Dashboard = () => {
                 Last updated: {new Date(resume.updatedAt).toLocaleDateString()}
               </ResumeDate>
               <ButtonGroup>
+                <ActionButton preview onClick={() => handlePreviewResume(resume.id)}>
+                  <Eye size={16} />
+                  Preview
+                </ActionButton>
                 <ActionButton onClick={() => handleEditResume(resume.id)}>
                   <Edit size={16} />
                   Edit
