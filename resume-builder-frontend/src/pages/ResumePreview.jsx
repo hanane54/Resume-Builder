@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axiosInstance from '../api/axiosConfig';
+import { generatePDF } from '../utils/pdfGenerator';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -65,6 +66,7 @@ const ResumePreview = () => {
   const [resumeData, setResumeData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const resumeRef = useRef(null);
 
   useEffect(() => {
     const fetchResumeData = async () => {
@@ -84,28 +86,10 @@ const ResumePreview = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await axiosInstance.get(`/resumes/${resumeId}/download`, {
-        responseType: 'blob'
-      });
-      
-      // Create a blob from the PDF data
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      
-      // Create a URL for the blob
-      const url = window.URL.createObjectURL(blob);
-      
-      // Create a temporary link element
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${resumeData.title || 'resume'}.pdf`;
-      
-      // Append link to body, click it, and remove it
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the URL
-      window.URL.revokeObjectURL(url);
+      if (!resumeRef.current) {
+        throw new Error('Resume content not found');
+      }
+      await generatePDF(resumeRef.current, resumeData?.title || 'resume');
     } catch (err) {
       console.error('Failed to download resume:', err);
       setError('Failed to download resume. Please try again.');
@@ -139,7 +123,7 @@ const ResumePreview = () => {
         </ButtonGroup>
       </Header>
 
-      <PreviewContainer>
+      <PreviewContainer ref={resumeRef}>
         {/* Render the resume preview based on the selected template */}
         {templateId === 'modern' ? (
           <ModernTemplate resumeData={resumeData} />

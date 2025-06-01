@@ -132,7 +132,6 @@ const Navbar = () => {
           {isAuthenticated ? (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/profile">Profile</NavLink>
               <Button onClick={handleLogout}>Logout</Button>
             </>
           ) : (
@@ -152,7 +151,6 @@ const Navbar = () => {
         {isAuthenticated ? (
           <>
             <NavLink to="/dashboard" onClick={toggleMobileMenu}>Dashboard</NavLink>
-            <NavLink to="/profile" onClick={toggleMobileMenu}>Profile</NavLink>
             <Button onClick={handleLogout}>Logout</Button>
           </>
         ) : (
