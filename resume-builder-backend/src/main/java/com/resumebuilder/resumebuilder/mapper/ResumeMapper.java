@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class ResumeMapper {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final int MAX_LENGTH = 255;
 
     ResumeMapper(AuthenticationManager authenticationManager) {}
 
@@ -170,78 +171,166 @@ public class ResumeMapper {
         return resumeResponseDTO;
     }
 
+    private String truncateIfNeeded(String value) {
+        if (value != null && value.length() > MAX_LENGTH) {
+            return value.substring(0, MAX_LENGTH);
+        }
+        return value;
+    }
+
     public void updateEntityFromDTO(ResumeRegisterDTO resumeDTO, Resume resume) {
         if (resume == null || resumeDTO == null) {
             return;
         }
 
-        resume.setTitle(resumeDTO.getTitle());
-        resume.setSummary(resumeDTO.getSummary());
-        resume.setFullName(resumeDTO.getFullName());
-        resume.setEmail(resumeDTO.getEmail());
-        resume.setPhone(resumeDTO.getPhone());
-        resume.setAddress(resumeDTO.getAddress());
-        resume.setLinkedin(resumeDTO.getLinkedin());
-        resume.setWebsite(resumeDTO.getWebsite());
+        try {
+            // Update basic information with length validation
+            resume.setTitle(truncateIfNeeded(resumeDTO.getTitle()));
+            resume.setSummary(truncateIfNeeded(resumeDTO.getSummary()));
+            resume.setFullName(truncateIfNeeded(resumeDTO.getFullName()));
+            resume.setEmail(truncateIfNeeded(resumeDTO.getEmail()));
+            resume.setPhone(truncateIfNeeded(resumeDTO.getPhone()));
+            resume.setAddress(truncateIfNeeded(resumeDTO.getAddress()));
+            resume.setLinkedin(truncateIfNeeded(resumeDTO.getLinkedin()));
+            resume.setWebsite(truncateIfNeeded(resumeDTO.getWebsite()));
 
-        // Clear existing collections
-        resume.getEducation().clear();
-        resume.getWorkExperience().clear();
-        resume.getSkills().clear();
-        resume.getProjects().clear();
+            // Update education
+            if (resumeDTO.getEducation() != null) {
+                // Update existing education entries or add new ones
+                for (int i = 0; i < resumeDTO.getEducation().size(); i++) {
+                    EducationDTO eduDTO = resumeDTO.getEducation().get(i);
+                    Education education;
+                    
+                    if (i < resume.getEducation().size()) {
+                        // Update existing education
+                        education = resume.getEducation().get(i);
+                    } else {
+                        // Add new education
+                        education = new Education();
+                        resume.addEducation(education);
+                    }
 
-        // Map education
-        if (resumeDTO.getEducation() != null) {
-            resumeDTO.getEducation().forEach(eduDTO -> {
-                Education education = new Education();
-                education.setInstitution(eduDTO.getInstitution());
-                education.setDegree(eduDTO.getDegree());
-                education.setFieldOfStudy(eduDTO.getFieldOfStudy());
-                education.setStartDate(eduDTO.getStartDate());
-                education.setEndDate(eduDTO.getEndDate());
-                education.setDescription(eduDTO.getDescription());
-                resume.addEducation(education);
-            });
-        }
-
-        // Map experience
-        if (resumeDTO.getExperience() != null) {
-            resumeDTO.getExperience().forEach(expDTO -> {
-                Experience experience = new Experience();
-                experience.setCompanyName(expDTO.getCompany());
-                experience.setPosition(expDTO.getPosition());
-                // Parse date strings to LocalDateTime
-                if (expDTO.getStartDate() != null) {
-                    LocalDate startDate = LocalDate.parse(expDTO.getStartDate(), DATE_FORMATTER);
-                    experience.setStartDate(startDate.atStartOfDay());
+                    education.setInstitution(truncateIfNeeded(eduDTO.getInstitution()));
+                    education.setDegree(truncateIfNeeded(eduDTO.getDegree()));
+                    education.setFieldOfStudy(truncateIfNeeded(eduDTO.getFieldOfStudy()));
+                    try {
+                        if (eduDTO.getStartDate() != null) {
+                            LocalDate startDate = LocalDate.parse(eduDTO.getStartDate(), DATE_FORMATTER);
+                            education.setStartDate(startDate.toString());
+                        }
+                        if (eduDTO.getEndDate() != null) {
+                            LocalDate endDate = LocalDate.parse(eduDTO.getEndDate(), DATE_FORMATTER);
+                            education.setEndDate(endDate.toString());
+                        }
+                    } catch (Exception e) {
+                        education.setStartDate(null);
+                        education.setEndDate(null);
+                    }
+                    education.setDescription(truncateIfNeeded(eduDTO.getDescription()));
                 }
-                if (expDTO.getEndDate() != null) {
-                    LocalDate endDate = LocalDate.parse(expDTO.getEndDate(), DATE_FORMATTER);
-                    experience.setEndDate(endDate.atStartOfDay());
+
+                // Remove excess education entries
+                while (resume.getEducation().size() > resumeDTO.getEducation().size()) {
+                    resume.getEducation().remove(resume.getEducation().size() - 1);
                 }
-                experience.setDescription(expDTO.getDescription());
-                resume.addWorkExperience(experience);
-            });
-        }
+            }
 
-        // Map skills
-        if (resumeDTO.getSkills() != null) {
-            resumeDTO.getSkills().forEach(skillName -> {
-                Skill skill = new Skill();
-                skill.setSkillname(skillName);
-                resume.addSkill(skill);
-            });
-        }
+            // Update experience
+            if (resumeDTO.getExperience() != null) {
+                // Update existing experience entries or add new ones
+                for (int i = 0; i < resumeDTO.getExperience().size(); i++) {
+                    ExperienceDTO expDTO = resumeDTO.getExperience().get(i);
+                    Experience experience;
+                    
+                    if (i < resume.getWorkExperience().size()) {
+                        // Update existing experience
+                        experience = resume.getWorkExperience().get(i);
+                    } else {
+                        // Add new experience
+                        experience = new Experience();
+                        resume.addWorkExperience(experience);
+                    }
 
-        // Map projects
-        if (resumeDTO.getProjects() != null) {
-            resumeDTO.getProjects().forEach(projDTO -> {
-                Project project = new Project();
-                project.setTitle(projDTO.getName());
-                project.setDescription(projDTO.getDescription());
-                project.setUrl(projDTO.getLink());
-                resume.addProject(project);
-            });
+                    experience.setCompanyName(truncateIfNeeded(expDTO.getCompany()));
+                    experience.setPosition(truncateIfNeeded(expDTO.getPosition()));
+                    try {
+                        if (expDTO.getStartDate() != null) {
+                            LocalDate startDate = LocalDate.parse(expDTO.getStartDate(), DATE_FORMATTER);
+                            experience.setStartDate(startDate.atStartOfDay());
+                        }
+                        if (expDTO.getEndDate() != null) {
+                            LocalDate endDate = LocalDate.parse(expDTO.getEndDate(), DATE_FORMATTER);
+                            experience.setEndDate(endDate.atStartOfDay());
+                        }
+                    } catch (Exception e) {
+                        experience.setStartDate(null);
+                        experience.setEndDate(null);
+                    }
+                    experience.setDescription(truncateIfNeeded(expDTO.getDescription()));
+                }
+
+                // Remove excess experience entries
+                while (resume.getWorkExperience().size() > resumeDTO.getExperience().size()) {
+                    resume.getWorkExperience().remove(resume.getWorkExperience().size() - 1);
+                }
+            }
+
+            // Update skills
+            if (resumeDTO.getSkills() != null) {
+                // Update existing skills or add new ones
+                for (int i = 0; i < resumeDTO.getSkills().size(); i++) {
+                    String skillName = resumeDTO.getSkills().get(i);
+                    if (skillName != null && !skillName.trim().isEmpty()) {
+                        Skill skill;
+                        if (i < resume.getSkills().size()) {
+                            // Update existing skill
+                            skill = resume.getSkills().get(i);
+                            skill.setSkillname(truncateIfNeeded(skillName));
+                        } else {
+                            // Add new skill
+                            skill = new Skill();
+                            skill.setSkillname(truncateIfNeeded(skillName));
+                            resume.addSkill(skill);
+                        }
+                    }
+                }
+
+                // Remove excess skills
+                while (resume.getSkills().size() > resumeDTO.getSkills().size()) {
+                    resume.getSkills().remove(resume.getSkills().size() - 1);
+                }
+            }
+
+            // Update projects
+            if (resumeDTO.getProjects() != null) {
+                // Update existing projects or add new ones
+                for (int i = 0; i < resumeDTO.getProjects().size(); i++) {
+                    ProjectDTO projDTO = resumeDTO.getProjects().get(i);
+                    if (projDTO != null && projDTO.getName() != null) {
+                        Project project;
+                        if (i < resume.getProjects().size()) {
+                            // Update existing project
+                            project = resume.getProjects().get(i);
+                        } else {
+                            // Add new project
+                            project = new Project();
+                            resume.addProject(project);
+                        }
+                        project.setTitle(truncateIfNeeded(projDTO.getName()));
+                        project.setDescription(truncateIfNeeded(projDTO.getDescription()));
+                        project.setUrl(truncateIfNeeded(projDTO.getLink()));
+                    }
+                }
+
+                // Remove excess projects
+                while (resume.getProjects().size() > resumeDTO.getProjects().size()) {
+                    resume.getProjects().remove(resume.getProjects().size() - 1);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating resume: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update resume: " + e.getMessage());
         }
     }
 }

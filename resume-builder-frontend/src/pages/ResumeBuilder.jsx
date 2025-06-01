@@ -227,16 +227,42 @@ const ResumeBuilder = () => {
     setError('');
 
     try {
-      let response;
+      // Format dates in the resume data
+      const formattedResumeData = {
+        ...resumeData,
+        experience: resumeData.experience.map(exp => ({
+          ...exp,
+          startDate: exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : null,
+          endDate: exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : null
+        })),
+        education: resumeData.education.map(edu => ({
+          ...edu,
+          startDate: edu.startDate ? new Date(edu.startDate).toISOString().split('T')[0] : null,
+          endDate: edu.endDate ? new Date(edu.endDate).toISOString().split('T')[0] : null
+        }))
+      };
+
+      console.log('Sending resume data:', formattedResumeData);
+
       if (resumeId) {
-        response = await updateResume(resumeId, resumeData);
+        // Update existing resume
+        await updateResume(resumeId, formattedResumeData);
+        console.log('Resume updated successfully');
+        navigate('/dashboard');
       } else {
-        response = await axiosInstance.post('/resumes', resumeData);
+        // Create new resume
+        const response = await axiosInstance.post('/resumes', formattedResumeData);
+        console.log('Create response:', response);
+        if (response.data && response.data.id) {
+          navigate(`/resume-templates/${response.data.id}`);
+        } else {
+          throw new Error('Invalid response from server');
+        }
       }
-      console.log('Resume saved successfully:', response.data);
-      navigate(`/resume-templates/${response.data.id}`);
     } catch (err) {
       console.error('Failed to save resume:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
       setError(err.response?.data?.message || 'Failed to save resume. Please try again.');
     } finally {
       setIsLoading(false);

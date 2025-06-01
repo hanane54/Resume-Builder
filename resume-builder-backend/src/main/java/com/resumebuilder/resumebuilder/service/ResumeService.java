@@ -69,20 +69,28 @@ public class ResumeService {
 
     @Transactional
     public ResumeResponseDTO updateResume(Long id, ResumeRegisterDTO resumeDTO, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        
-        Resume resume = resumeRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("No resume found with id: ", id) );
+        try {
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            
+            Resume resume = resumeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No resume found with id: " + id));
 
-        // Check if the current user is the resume owner
-        if (!resume.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedException("You do not have permission to update this resume");
+            // Check if the current user is the resume owner
+            if (!resume.getUser().getId().equals(user.getId())) {
+                throw new UnauthorizedException("You do not have permission to update this resume");
+            }
+            
+            // Update resume properties
+            resumeMapper.updateEntityFromDTO(resumeDTO, resume);
+            
+            Resume updatedResume = resumeRepository.save(resume);
+            return resumeMapper.toResponseDTO(updatedResume);
+        } catch (Exception e) {
+            System.err.println("Error updating resume: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        
-        // Update resume properties
-        resumeMapper.updateEntityFromDTO(resumeDTO, resume);
-        
-        Resume updatedResume = resumeRepository.save(resume);
-        return resumeMapper.toResponseDTO(updatedResume);
     }
 
     @Transactional
