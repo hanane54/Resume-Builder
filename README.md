@@ -77,9 +77,7 @@ The API documentation is available through Swagger UI. After starting the backen
 ```
 http://localhost:8080/swagger-ui.html
 ```
-
-![Alt text](images/API-swagger.png)
-
+![alt text](swagger-api.png)
 
 Key API endpoints:
 - `/api/auth/*` - Authentication endpoints
