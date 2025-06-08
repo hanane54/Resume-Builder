@@ -2,8 +2,19 @@
 
 A modern, full-stack web application that helps users create professional resumes with ease. Built with React, Spring Boot, and styled with a beautiful, responsive design.
 
-![Resume Builder Dashboard](screenshots/dashboard.png)
-*Dashboard view showing user's resumes*
+Auth page:
+![Image](https://github.com/user-attachments/assets/a2537d13-dab7-4a3f-9517-39a3b8ef77b4)
+
+Dashboard showing user's resumes:
+![image](https://github.com/user-attachments/assets/6f4aa14c-81b6-47c9-bf1f-4681e31ca00c)
+
+Edit your resume info:
+![image](https://github.com/user-attachments/assets/55371778-374a-44e4-9146-e7c522358d49)
+
+Preview your resume and have the option to download it as a PDF:
+![image](https://github.com/user-attachments/assets/6a4ff4ff-1736-47f5-ad4b-135772651bbc)
+
+
 
 ## ✨ Features
 
